@@ -1,10 +1,21 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+} from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import type { QueryClient } from '@tanstack/react-query'
 
+import { Header } from '../shared/components/Header'
 import appCss from '../styles.css?url'
 
-export const Route = createRootRoute({
+interface RouterContext {
+  queryClient: QueryClient
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
@@ -15,7 +26,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Crypto Price Tracker',
       },
     ],
     links: [
@@ -30,11 +41,12 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="bg-slate-50 text-slate-900">
+        <Header />
         {children}
         <TanStackDevtools
           config={{
@@ -44,6 +56,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             {
               name: 'Tanstack Router',
               render: <TanStackRouterDevtoolsPanel />,
+            },
+            {
+              name: 'Tanstack Query',
+              render: <ReactQueryDevtoolsPanel />,
             },
           ]}
         />
