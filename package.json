@@ -23,6 +23,7 @@
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/react-router-with-query": "^1.130.17",
     "@tanstack/react-start": "latest",
+    "@tanstack/react-table": "^9.1.2",
     "clsx": "^2.1.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
