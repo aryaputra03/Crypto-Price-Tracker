@@ -1,3 +1,9 @@
+// SupportedCurrency bersumber dari features/currency (Fase 4), supaya
+// daftar currency cuma didefinisikan di satu tempat lalu dipakai ulang di sini.
+import type { SupportedCurrency } from '../currency/constants'
+
+export type { SupportedCurrency }
+
 /**
  * Bentuk data satu coin dari endpoint CoinGecko GET /coins/markets.
  * Field opsional/nullable mengikuti dokumentasi resmi per Agustus 2026 —
@@ -37,9 +43,6 @@ export interface CoinRoi {
   currency: string
   percentage: number
 }
-
-/** Currency yang didukung currency switcher (FR-08). */
-export type SupportedCurrency = 'usd' | 'idr' | 'eur'
 
 export interface CoinsMarketsParams {
   vsCurrency: SupportedCurrency
