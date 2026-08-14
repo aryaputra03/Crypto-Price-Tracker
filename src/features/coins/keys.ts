@@ -8,4 +8,6 @@ export const coinKeys = {
   list: (currency: string, page: number) =>
     [...coinKeys.lists(), currency, page] as const,
   detail: (id: string) => [...coinKeys.all, 'detail', id] as const,
+  marketChart: (id: string, currency: string, days: number) =>
+    [...coinKeys.all, 'market-chart', id, currency, days] as const,
 }

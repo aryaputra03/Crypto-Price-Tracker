@@ -1,28 +1,17 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import type { ReactNode } from 'react'
-import { z } from 'zod'
 
 import { CoinTableSection } from '../features/coins/components/CoinTableSection'
 import { CoinTableSkeleton } from '../features/coins/components/CoinTableSkeleton'
 import { SearchBar } from '../features/coins/components/SearchBar'
 import { coinsQueryOptions } from '../features/coins/hooks/useCoinsQuery'
+import { coinsListSearchSchema } from '../features/coins/search-schema'
 import { CurrencySwitcher } from '../features/currency/components/CurrencySwitcher'
-import { SUPPORTED_CURRENCIES } from '../features/currency/constants'
 import { PageContainer } from '../shared/components/PageContainer'
 
-// Divalidasi pakai Zod v4 langsung (bukan @tanstack/zod-adapter — adapter
-// itu cuma perlu untuk Zod v3). .catch() menangkap value URL yang rusak/tidak
-// valid (mis. ?page=abc) dan .default() menangani key yang tidak ada sama
-// sekali di URL.
-const homeSearchSchema = z.object({
-  page: z.number().int().min(1).default(1).catch(1),
-  currency: z.enum(SUPPORTED_CURRENCIES).default('usd').catch('usd'),
-  search: z.string().default('').catch(''),
-})
-
 export const Route = createFileRoute('/')({
-  validateSearch: homeSearchSchema,
+  validateSearch: coinsListSearchSchema,
   // Loader cuma perlu tahu currency — search (filter) & page (pagination
   // tabel client-side) tidak memicu fetch API baru, jadi tidak dimasukkan
   // sebagai loader deps (lihat catatan "Common Mistakes" TanStack Router:
@@ -89,7 +78,9 @@ function HomeShell({ children }: { children: ReactNode }) {
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <SearchBar />
-        <CurrencySwitcher />
+        <div className="flex items-center gap-4">
+          <CurrencySwitcher />
+        </div>
       </div>
 
       <div className="mt-6">{children}</div>

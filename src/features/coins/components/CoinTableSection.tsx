@@ -25,16 +25,22 @@ export function CoinTableSection({
 }: CoinTableSectionProps) {
   const { data, isError, error } = useCoinsQuery({ currency })
 
-  // Filter client-side atas data yang sudah ter-fetch (Fase 4) — tetap sama,
-  // cuma sumber data-nya sekarang dari useSuspenseQuery.
+  // Filter client-side atas data yang sudah ter-fetch (Fase 4), sekarang
+  // ditambah filter watchlist (Fase 7) — dua-duanya independen, bisa aktif
+  // bareng (search "bit" + watchlist saja, misalnya).
   const filteredData = useMemo(() => {
     const query = search.trim().toLowerCase()
-    if (!query) return data
-    return data.filter(
-      (coin) =>
-        coin.name.toLowerCase().includes(query) ||
-        coin.symbol.toLowerCase().includes(query),
-    )
+    let result = data
+
+    if (query) {
+      result = result.filter(
+        (coin) =>
+          coin.name.toLowerCase().includes(query) ||
+          coin.symbol.toLowerCase().includes(query),
+      )
+    }
+
+    return result
   }, [data, search])
 
   return (
@@ -53,11 +59,10 @@ export function CoinTableSection({
           currency={currency}
           page={page}
           onPageChange={onPageChange}
+          search={search}
         />
       ) : (
-        <p className="text-slate-500">
-          Tidak ada coin yang cocok dengan pencarian &quot;{search}&quot;.
-        </p>
+        <p className="text-slate-500"></p>
       )}
     </>
   )

@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   createColumnHelper,
   createPaginatedRowModel,
@@ -13,6 +14,7 @@ import { useMemo } from 'react'
 
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/lib/cn'
+import { formatCurrency } from '@/features/currency/format'
 import type { SupportedCurrency } from '@/features/currency/constants'
 
 import type { Coin } from '../types'
@@ -34,26 +36,14 @@ const features = tableFeatures({
 // yang aktif — beda dari Fase 3 yang kolomnya statis.
 const helper = createColumnHelper<typeof features, Coin>()
 
-function formatCurrency(
-  value: number,
-  currency: SupportedCurrency,
-  compact = false,
-) {
-  return value.toLocaleString(currency === 'idr' ? 'id-ID' : 'en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-    notation: compact ? 'compact' : 'standard',
-    minimumFractionDigits: compact ? 0 : value < 1 ? 4 : 2,
-    maximumFractionDigits: compact ? 1 : value < 1 ? 6 : 2,
-  })
-}
-
 interface CoinTableProps {
   data: Array<Coin>
   currency: SupportedCurrency
   /** Halaman tabel saat ini, 1-based, disinkronkan ke search param `page`. */
   page: number
   onPageChange: (page: number) => void
+  /** Teks filter aktif — dibawa juga ke halaman detail (Fase 6) supaya tombol "kembali" bisa restore state persis. */
+  search: string
 }
 
 const PAGE_SIZE = 10
@@ -63,6 +53,7 @@ export function CoinTable({
   currency,
   page,
   onPageChange,
+  search,
 }: CoinTableProps) {
   const columns = useMemo(
     () =>
@@ -82,7 +73,12 @@ export function CoinTable({
           cell: (info) => {
             const coin = info.row.original
             return (
-              <div className="flex items-center gap-2">
+              <Link
+                to="/coin/$coinId"
+                params={{ coinId: coin.id }}
+                search={{ page, currency, search }}
+                className="flex items-center gap-2 hover:underline"
+              >
                 <img
                   src={coin.image}
                   alt=""
@@ -95,7 +91,7 @@ export function CoinTable({
                     {coin.symbol}
                   </div>
                 </div>
-              </div>
+              </Link>
             )
           },
         }),
@@ -126,7 +122,7 @@ export function CoinTable({
           ),
         }),
       ]),
-    [currency],
+    [currency, page, search],
   )
 
   const table = useTable({
