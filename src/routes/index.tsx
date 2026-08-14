@@ -8,6 +8,7 @@ import { SearchBar } from '../features/coins/components/SearchBar'
 import { coinsQueryOptions } from '../features/coins/hooks/useCoinsQuery'
 import { coinsListSearchSchema } from '../features/coins/search-schema'
 import { CurrencySwitcher } from '../features/currency/components/CurrencySwitcher'
+import { WatchlistFilterToggle } from '../features/watchlist/components/WatchlistFilterToggle'
 import { PageContainer } from '../shared/components/PageContainer'
 
 export const Route = createFileRoute('/')({
@@ -79,6 +80,7 @@ function HomeShell({ children }: { children: ReactNode }) {
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <SearchBar />
         <div className="flex items-center gap-4">
+          <WatchlistFilterToggle />
           <CurrencySwitcher />
         </div>
       </div>
@@ -89,7 +91,7 @@ function HomeShell({ children }: { children: ReactNode }) {
 }
 
 function Home() {
-  const { page, currency, search } = Route.useSearch()
+  const { page, currency, search, watchlistOnly } = Route.useSearch()
   const navigate = Route.useNavigate()
 
   return (
@@ -99,6 +101,7 @@ function Home() {
           currency={currency}
           page={page}
           search={search}
+          watchlistOnly={watchlistOnly}
           onPageChange={(nextPage) =>
             navigate({ search: (prev) => ({ ...prev, page: nextPage }) })
           }

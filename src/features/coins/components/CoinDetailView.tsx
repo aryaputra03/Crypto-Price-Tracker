@@ -6,6 +6,7 @@ import type { SupportedCurrency } from '@/features/currency/constants'
 import { useCoinDetailQuery } from '../hooks/useCoinDetailQuery'
 import type { CoinsListSearch } from '../search-schema'
 import { CoinPriceChart } from './CoinPriceChart'
+import { WatchlistToggle } from '@/features/watchlist/components/WatchlistToggle'
 
 interface CoinDetailViewProps {
   coinId: string
@@ -68,6 +69,7 @@ export function CoinDetailView({
             </p>
           )}
         </div>
+        <WatchlistToggle coinId={coinId} className="ml-auto text-2xl" />
       </div>
 
       {price !== undefined && (

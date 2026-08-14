@@ -65,7 +65,7 @@ export const Route = createFileRoute('/coin/$coinId')({
 
 function CoinDetailPage() {
   const { coinId } = Route.useParams()
-  const { page, currency, search } = Route.useSearch()
+  const { page, currency, search, watchlistOnly } = Route.useSearch()
 
   return (
     <PageContainer>
@@ -73,7 +73,7 @@ function CoinDetailPage() {
         <CoinDetailView
           coinId={coinId}
           currency={currency}
-          backSearch={{ page, currency, search }}
+          backSearch={{ page, currency, search, watchlistOnly }}
         />
       </Suspense>
     </PageContainer>

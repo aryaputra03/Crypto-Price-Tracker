@@ -19,6 +19,7 @@ import type { SupportedCurrency } from '@/features/currency/constants'
 
 import type { Coin } from '../types'
 import { PriceChangeBadge } from './PriceChangeBadge'
+import { WatchlistToggle } from '@/features/watchlist/components/WatchlistToggle'
 
 // Fitur tabel didaftarkan eksplisit di TanStack Table v9 (beda dari v8 yang
 // otomatis semua fitur aktif). Ini satu-satunya kombinasi yang Fase 3 perlu:
@@ -58,6 +59,11 @@ export function CoinTable({
   const columns = useMemo(
     () =>
       helper.columns([
+        helper.display({
+          id: 'watchlist',
+          header: '',
+          cell: (info) => <WatchlistToggle coinId={info.row.original.id} />,
+        }),
         helper.accessor('market_cap_rank', {
           id: 'market_cap_rank',
           header: '#',
