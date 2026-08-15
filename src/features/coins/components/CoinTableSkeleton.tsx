@@ -4,7 +4,7 @@ export function CoinTableSkeleton() {
     <div
       role="status"
       aria-label="Memuat daftar coin"
-      className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+      className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
     >
       <div className="h-10 border-b border-slate-200 bg-slate-50" />
       <ul>
@@ -13,10 +13,10 @@ export function CoinTableSkeleton() {
             key={i}
             className="flex items-center gap-4 border-b border-slate-100 px-4 py-4 last:border-0"
           >
-            <div className="h-4 w-6 animate-pulse rounded bg-slate-200" />
-            <div className="h-6 w-6 animate-pulse rounded-full bg-slate-200" />
-            <div className="h-4 w-32 animate-pulse rounded bg-slate-200" />
-            <div className="ml-auto h-4 w-16 animate-pulse rounded bg-slate-200" />
+            <div className="skeleton h-4 w-6 rounded" />
+            <div className="skeleton h-6 w-6 rounded-full" />
+            <div className="skeleton h-4 w-32 rounded" />
+            <div className="skeleton ml-auto h-4 w-16 rounded" />
           </li>
         ))}
       </ul>

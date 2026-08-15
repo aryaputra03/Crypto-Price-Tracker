@@ -47,17 +47,21 @@ export function CoinDetailView({
   const homepage = coin.links.homepage.find((url) => url.length > 0)
 
   return (
-    <div>
+    <div className="animate-fade-in-up">
       <Link
         to="/"
         search={backSearch}
-        className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline"
+        className="inline-flex items-center gap-1 rounded text-sm font-medium text-brand-600 transition-colors hover:text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         ← Kembali ke daftar
       </Link>
 
       <div className="mt-4 flex items-center gap-3">
-        <img src={coin.image.large} alt="" className="h-12 w-12" />
+        <img
+          src={coin.image.large}
+          alt=""
+          className="h-12 w-12 rounded-full shadow-sm"
+        />
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             {coin.name}{' '}
@@ -84,6 +88,7 @@ export function CoinDetailView({
 
       <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatItem
+          index={0}
           label="Market Cap"
           value={
             marketCap !== undefined
@@ -92,10 +97,12 @@ export function CoinDetailView({
           }
         />
         <StatItem
+          index={1}
           label="Circulating Supply"
           value={`${coin.market_data.circulating_supply.toLocaleString('en-US')} ${coin.symbol.toUpperCase()}`}
         />
         <StatItem
+          index={2}
           label="All-Time High"
           value={
             ath !== undefined && athDate !== undefined
@@ -104,6 +111,7 @@ export function CoinDetailView({
           }
         />
         <StatItem
+          index={3}
           label="All-Time Low"
           value={
             atl !== undefined && atlDate !== undefined
@@ -127,7 +135,7 @@ export function CoinDetailView({
           href={homepage}
           target="_blank"
           rel="noopener noreferrer nofollow"
-          className="mt-4 inline-block text-sm text-brand-600 hover:underline"
+          className="mt-4 inline-block rounded text-sm text-brand-600 transition-colors hover:text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           Website resmi ↗
         </a>
@@ -136,9 +144,20 @@ export function CoinDetailView({
   )
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function StatItem({
+  label,
+  value,
+  index,
+}: {
+  label: string
+  value: string
+  index: number
+}) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3">
+    <div
+      className="animate-fade-in-up rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md"
+      style={{ animationDelay: `${100 + index * 60}ms` }}
+    >
       <dt className="text-xs uppercase tracking-wide text-slate-500">
         {label}
       </dt>

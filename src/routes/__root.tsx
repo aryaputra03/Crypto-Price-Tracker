@@ -33,6 +33,23 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
     ],
     links: [
+      // Fase 9 (polish) — Manrope (UI) + JetBrains Mono (angka). Preconnect
+      // dulu ke domain font supaya koneksinya sudah "panas" pas request
+      // stylesheet font-nya menyusul, sedikit mempercepat First Contentful
+      // Paint dibanding load font langsung tanpa preconnect.
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+      {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossOrigin: 'anonymous',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap',
+      },
       {
         rel: 'stylesheet',
         href: appCss,

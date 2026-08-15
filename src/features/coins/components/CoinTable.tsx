@@ -14,6 +14,7 @@ import { useMemo } from 'react'
 
 import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/lib/cn'
+import { usePriceFlash } from '@/shared/hooks/usePriceFlash'
 import { formatCurrency } from '@/features/currency/format'
 import type { SupportedCurrency } from '@/features/currency/constants'
 import { WatchlistToggle } from '@/features/watchlist/components/WatchlistToggle'
@@ -113,11 +114,23 @@ export function CoinTable({
           id: 'current_price',
           header: 'Harga',
           sortFn: 'basic',
-          cell: (info) => (
-            <span className="font-mono">
-              {formatCurrency(info.getValue(), currency)}
-            </span>
-          ),
+          cell: (info) => {
+            const value = info.getValue()
+            // Efek signature: kedip hijau/merah tiap harga berubah dari
+            // polling — meniru layar harga live exchange sungguhan.
+            const flash = usePriceFlash(value)
+            return (
+              <span
+                className={cn(
+                  'inline-block rounded px-1.5 py-0.5 font-mono',
+                  flash === 'up' && 'animate-flash-up',
+                  flash === 'down' && 'animate-flash-down',
+                )}
+              >
+                {formatCurrency(value, currency)}
+              </span>
+            )
+          },
         }),
         helper.accessor('price_change_percentage_24h', {
           id: 'price_change_percentage_24h',
@@ -174,7 +187,7 @@ export function CoinTable({
   })
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
       {/* overflow-x-auto: jaring pengaman kalau di layar sangat sempit
           masih ada kolom yang kepotong walau market_cap/total_volume sudah
           disembunyikan lewat HIDE_BELOW_SM. */}
@@ -199,14 +212,20 @@ export function CoinTable({
                           type="button"
                           onClick={header.column.getToggleSortingHandler()}
                           className={cn(
-                            'inline-flex items-center gap-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            'inline-flex items-center gap-1 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
                             header.column.getCanSort() &&
                               'cursor-pointer select-none hover:text-slate-700',
                           )}
                         >
                           <table.FlexRender header={header} />
-                          {sortDir === 'asc' && '▲'}
-                          {sortDir === 'desc' && '▼'}
+                          <span
+                            className={cn(
+                              'inline-block transition-transform duration-200',
+                              sortDir === 'desc' && 'rotate-180',
+                            )}
+                          >
+                            {(sortDir === 'asc' || sortDir === 'desc') && '▲'}
+                          </span>
                         </button>
                       )}
                     </th>
@@ -219,10 +238,15 @@ export function CoinTable({
             {table.getRowModel().rows.map((row, i) => (
               <tr
                 key={row.id}
+                // Muncul bertahap (cascade) — cuma jalan sekali saat baris
+                // ini pertama kali masuk DOM (ganti halaman/currency/filter),
+                // TIDAK terpicu ulang tiap kali harga di baris yang sama
+                // update lewat polling (row-nya tidak remount).
                 className={cn(
-                  'hover:bg-slate-50',
+                  'animate-fade-in-up transition-colors hover:bg-slate-50',
                   i % 2 === 1 && 'bg-slate-50/60',
                 )}
+                style={{ animationDelay: `${i * 35}ms` }}
               >
                 {row.getAllCells().map((cell) => (
                   <td
