@@ -8,10 +8,16 @@ import tailwindcss from '@tailwindcss/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
-  plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
-  server: {
-    preset: 'netlify', // Tambahkan baris ini!
-  },
+  plugins: [
+    devtools(),
+    tailwindcss(),
+    tanstackStart({
+      server: {
+        preset: 'netlify', // Posisinya di dalam kurung tanstackStart!
+      },
+    }),
+    viteReact(),
+  ],
 })
 
 export default config
