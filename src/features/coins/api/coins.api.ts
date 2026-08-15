@@ -2,7 +2,7 @@ import {
   fetchCoinDetailServerFn,
   fetchCoinMarketChartServerFn,
   fetchCoinsMarketsServerFn,
-} from './coins.server'
+} from './coins.functions'
 import type {
   Coin,
   CoinDetail,
