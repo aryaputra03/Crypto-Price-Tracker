@@ -1,23 +1,10 @@
 import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
-
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-const config = defineConfig({
+export default defineConfig({
   resolve: { tsconfigPaths: true },
-  plugins: [
-    devtools(),
-    tailwindcss(),
-    tanstackStart({
-      server: {
-        preset: 'netlify', // Posisinya di dalam kurung tanstackStart!
-      },
-    }),
-    viteReact(),
-  ],
+  plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
 })
-
-export default config
