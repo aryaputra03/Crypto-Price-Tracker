@@ -10,7 +10,7 @@ interface PriceChangeBadgeProps {
  */
 export function PriceChangeBadge({ value }: PriceChangeBadgeProps) {
   if (value === null) {
-    return <span className="text-slate-400">-</span>
+    return <span className="text-slate-500">-</span>
   }
 
   const isPositive = value >= 0

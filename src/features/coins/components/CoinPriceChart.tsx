@@ -32,7 +32,7 @@ export function CoinPriceChart({ coinId, currency }: CoinPriceChartProps) {
   if (isError || !data || data.prices.length === 0) {
     return (
       <div className="flex h-56 w-full items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-slate-500">
           Grafik harga 7 hari tidak tersedia saat ini.
         </p>
       </div>

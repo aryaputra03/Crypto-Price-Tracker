@@ -16,10 +16,10 @@ import { Button } from '@/shared/components/ui/Button'
 import { cn } from '@/shared/lib/cn'
 import { formatCurrency } from '@/features/currency/format'
 import type { SupportedCurrency } from '@/features/currency/constants'
+import { WatchlistToggle } from '@/features/watchlist/components/WatchlistToggle'
 
 import type { Coin } from '../types'
 import { PriceChangeBadge } from './PriceChangeBadge'
-import { WatchlistToggle } from '@/features/watchlist/components/WatchlistToggle'
 
 // Fitur tabel didaftarkan eksplisit di TanStack Table v9 (beda dari v8 yang
 // otomatis semua fitur aktif). Ini satu-satunya kombinasi yang Fase 3 perlu:
@@ -37,6 +37,12 @@ const features = tableFeatures({
 // yang aktif — beda dari Fase 3 yang kolomnya statis.
 const helper = createColumnHelper<typeof features, Coin>()
 
+// Fase 8 — kolom sekunder yang disembunyikan di layar sempit (< sm) supaya
+// tabel tidak mepet/overflow di HP. Tetap bisa diakses lewat scroll
+// horizontal (overflow-x-auto di wrapper) kalau ada kolom lain yang masih
+// kepotong juga.
+const HIDE_BELOW_SM = new Set(['market_cap', 'total_volume'])
+
 interface CoinTableProps {
   data: Array<Coin>
   currency: SupportedCurrency
@@ -45,6 +51,7 @@ interface CoinTableProps {
   onPageChange: (page: number) => void
   /** Teks filter aktif — dibawa juga ke halaman detail (Fase 6) supaya tombol "kembali" bisa restore state persis. */
   search: string
+  watchlistOnly: boolean
 }
 
 const PAGE_SIZE = 10
@@ -55,6 +62,7 @@ export function CoinTable({
   page,
   onPageChange,
   search,
+  watchlistOnly,
 }: CoinTableProps) {
   const columns = useMemo(
     () =>
@@ -69,7 +77,7 @@ export function CoinTable({
           header: '#',
           sortFn: 'basic',
           cell: (info) => (
-            <span className="text-slate-400">{info.getValue() ?? '-'}</span>
+            <span className="text-slate-500">{info.getValue() ?? '-'}</span>
           ),
         }),
         helper.accessor('name', {
@@ -82,8 +90,8 @@ export function CoinTable({
               <Link
                 to="/coin/$coinId"
                 params={{ coinId: coin.id }}
-                search={{ page, currency, search }}
-                className="flex items-center gap-2 hover:underline"
+                search={{ page, currency, search, watchlistOnly }}
+                className="flex items-center gap-2 rounded hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
               >
                 <img
                   src={coin.image}
@@ -93,7 +101,7 @@ export function CoinTable({
                 />
                 <div>
                   <div className="font-medium text-slate-900">{coin.name}</div>
-                  <div className="text-xs uppercase text-slate-400">
+                  <div className="text-xs uppercase text-slate-500">
                     {coin.symbol}
                   </div>
                 </div>
@@ -127,8 +135,21 @@ export function CoinTable({
             </span>
           ),
         }),
+        // FR-01 (Blueprint): daftar coin wajib menampilkan volume juga —
+        // sebelumnya sempat kelewat sampai baru ketahuan saat re-test FR-01
+        // s.d. FR-10 di Fase 8 ini.
+        helper.accessor('total_volume', {
+          id: 'total_volume',
+          header: 'Volume (24j)',
+          sortFn: 'basic',
+          cell: (info) => (
+            <span className="font-mono">
+              {formatCurrency(info.getValue(), currency, true)}
+            </span>
+          ),
+        }),
       ]),
-    [currency, page, search],
+    [currency, page, search, watchlistOnly],
   )
 
   const table = useTable({
@@ -154,53 +175,72 @@ export function CoinTable({
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
-      <table className="w-full text-sm">
-        <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {table.getHeaderGroups().map((group) => (
-            <tr key={group.id}>
-              {group.headers.map((header) => {
-                const sortDir = header.column.getIsSorted()
-                return (
-                  <th key={header.id} className="px-4 py-3">
-                    {header.isPlaceholder ? null : (
-                      <button
-                        type="button"
-                        onClick={header.column.getToggleSortingHandler()}
-                        className={cn(
-                          'inline-flex items-center gap-1',
-                          header.column.getCanSort() &&
-                            'cursor-pointer select-none hover:text-slate-700',
-                        )}
-                      >
-                        <table.FlexRender header={header} />
-                        {sortDir === 'asc' && '▲'}
-                        {sortDir === 'desc' && '▼'}
-                      </button>
+      {/* overflow-x-auto: jaring pengaman kalau di layar sangat sempit
+          masih ada kolom yang kepotong walau market_cap/total_volume sudah
+          disembunyikan lewat HIDE_BELOW_SM. */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+            {table.getHeaderGroups().map((group) => (
+              <tr key={group.id}>
+                {group.headers.map((header) => {
+                  const sortDir = header.column.getIsSorted()
+                  return (
+                    <th
+                      key={header.id}
+                      className={cn(
+                        'px-4 py-3',
+                        HIDE_BELOW_SM.has(header.column.id) &&
+                          'hidden sm:table-cell',
+                      )}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <button
+                          type="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                          className={cn(
+                            'inline-flex items-center gap-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500',
+                            header.column.getCanSort() &&
+                              'cursor-pointer select-none hover:text-slate-700',
+                          )}
+                        >
+                          <table.FlexRender header={header} />
+                          {sortDir === 'asc' && '▲'}
+                          {sortDir === 'desc' && '▼'}
+                        </button>
+                      )}
+                    </th>
+                  )
+                })}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {table.getRowModel().rows.map((row, i) => (
+              <tr
+                key={row.id}
+                className={cn(
+                  'hover:bg-slate-50',
+                  i % 2 === 1 && 'bg-slate-50/60',
+                )}
+              >
+                {row.getAllCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className={cn(
+                      'px-4 py-3',
+                      HIDE_BELOW_SM.has(cell.column.id) &&
+                        'hidden sm:table-cell',
                     )}
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="divide-y divide-slate-100">
-          {table.getRowModel().rows.map((row, i) => (
-            <tr
-              key={row.id}
-              className={cn(
-                'hover:bg-slate-50',
-                i % 2 === 1 && 'bg-slate-50/60',
-              )}
-            >
-              {row.getAllCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-3">
-                  <table.FlexRender cell={cell} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  >
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3 text-sm text-slate-600">
         <span>

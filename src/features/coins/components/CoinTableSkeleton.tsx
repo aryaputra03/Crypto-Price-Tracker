@@ -1,7 +1,11 @@
 /** Placeholder skeleton selagi data coin belum tersedia (isLoading). */
 export function CoinTableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
+    <div
+      role="status"
+      aria-label="Memuat daftar coin"
+      className="overflow-hidden rounded-lg border border-slate-200 bg-white"
+    >
       <div className="h-10 border-b border-slate-200 bg-slate-50" />
       <ul>
         {Array.from({ length: 8 }).map((_, i) => (

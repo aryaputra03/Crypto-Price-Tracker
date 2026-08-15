@@ -61,7 +61,7 @@ export function CoinDetailView({
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             {coin.name}{' '}
-            <span className="text-slate-400 uppercase">{coin.symbol}</span>
+            <span className="text-slate-500 uppercase">{coin.symbol}</span>
           </h1>
           {coin.market_cap_rank !== null && (
             <p className="text-sm text-slate-500">
@@ -139,7 +139,7 @@ export function CoinDetailView({
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3">
-      <dt className="text-xs uppercase tracking-wide text-slate-400">
+      <dt className="text-xs uppercase tracking-wide text-slate-500">
         {label}
       </dt>
       <dd className="mt-1 font-mono text-sm font-medium text-slate-900">

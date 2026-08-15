@@ -79,7 +79,7 @@ function HomeShell({ children }: { children: ReactNode }) {
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <SearchBar />
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <WatchlistFilterToggle />
           <CurrencySwitcher />
         </div>

@@ -68,6 +68,7 @@ export function CoinTableSection({
           page={page}
           onPageChange={onPageChange}
           search={search}
+          watchlistOnly={watchlistOnly}
         />
       ) : (
         <p className="text-slate-500">
