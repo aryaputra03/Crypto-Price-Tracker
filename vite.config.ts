@@ -6,5 +6,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
-  plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
+  plugins: [
+    devtools(),
+    tailwindcss(),
+    tanstackStart({
+      server: {
+        preset: 'vercel', // Ini "mantra" ajaibnya agar Vercel mengerti!
+      },
+    }),
+    viteReact(),
+  ],
 })
